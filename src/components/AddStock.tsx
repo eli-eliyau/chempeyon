@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import { RootState } from '../redux/store.ts';
 import { addUserStock } from '../redux/portfolioSlice.ts';
 import { Button, Typography, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
@@ -12,7 +12,7 @@ const availableStocks = [
   { symbol: 'GOOGL', pricePerUnit: 2800 },
 ];
 
-const AddUser: React.FC = () => {
+const AddStock: React.FC = () => {
   const dispatch = useDispatch();
   const users = useSelector((state: RootState) => state.portfolio.users);
   const [showAddStockForm, setShowAddStockForm] = useState(false);
@@ -91,4 +91,4 @@ const AddUser: React.FC = () => {
   );
 };
 
-export default AddUser;
+export default AddStock;

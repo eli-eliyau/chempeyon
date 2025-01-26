@@ -1,63 +1,40 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// pages/PortfolioPage.tsx
+import React, { useState, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { setMinValue } from '../redux/portfolioSlice.ts';
-import { Button, Typography, TextField } from '@mui/material';
-import AddUser from '../components/AddUser.tsx';  // ייבוא של קומפוננטת ההוספה
+import { sortUsers, filterUsersByMinValue } from '../utils/portfolioHelpers.ts';
+import { User } from '../interfaces/interfaces';
+import { Typography } from '@mui/material';
+import FilterControls from '../components/FilterControls.tsx';
+import UserList from '../components/UserList.tsx';
+import AddStock from '../components/AddStock.tsx';
 
 const PortfolioPage: React.FC = () => {
-  const dispatch = useDispatch();
   const users = useSelector((state: RootState) => state.portfolio.users);
-  const minValue = useSelector((state: RootState) => state.portfolio.minValue);
 
-  const [inputMinValue, setInputMinValue] = useState<number>(minValue);
+  const [sortOrder, setSortOrder] = useState<string>('alphabetical');
+  const [minValue, setMinValue] = useState<number>(0);
 
-  const filteredUsers = users.filter(
-    (user) => user.portfolio.stocks.reduce(
-      (total, stock) => total + stock.quantity * stock.pricePerUnit,
-      0
-    ) >= inputMinValue
-  );
+  // סינון משתמשים לפי ערך מינימלי
+  const filteredUsers = useMemo(() => filterUsersByMinValue(users, minValue), [users, minValue]);
 
-  const handleMinValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(event.target.value);
-    setInputMinValue(value);  // עדכון ה-state המקומי
-    dispatch(setMinValue(value));  // עדכון ה-minValue ב-Redux Store
-  };
+  // מיון משתמשים
+  const sortedAndFilteredUsers = useMemo(() => sortUsers(filteredUsers, sortOrder), [
+    filteredUsers,
+    sortOrder,
+  ]);
 
   return (
     <div>
       <Typography variant="h4">User Portfolio</Typography>
-
-      <TextField
-        label="Minimum Portfolio Value"
-        type="number"
-        value={inputMinValue}
-        onChange={handleMinValueChange}
-        variant="outlined"
-        margin="normal"
+      <FilterControls
+        sortOrder={sortOrder}
+        minValue={minValue}
+        onSortOrderChange={setSortOrder}
+        onMinValueChange={setMinValue}
       />
-
-      <AddUser />  {/* הוספת כפתור הוספת יוזר */}
-
-      <div>
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => (
-            <div key={user.id}>
-              <h3>{user.name}</h3>
-              <ul>
-                {user.portfolio.stocks.map((stock, index) => (
-                  <li key={index}>
-                    {stock.symbol} - {stock.quantity} shares @ ${stock.pricePerUnit}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        ) : (
-          <Typography>No users meet the minimum value criteria.</Typography>
-        )}
-      </div>
+      <UserList users={sortedAndFilteredUsers} />
+      <AddStock />
     </div>
   );
 };

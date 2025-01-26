@@ -25,7 +25,7 @@ const initialState: PortfolioState = {
   users: [
     {
       id: 1,
-      name: 'John Doe',
+      name: 'Jane Smith',
       portfolio: {
         stocks: [
           { symbol: 'AAPL', quantity: 10, pricePerUnit: 145 },
@@ -35,7 +35,7 @@ const initialState: PortfolioState = {
     },
     {
       id: 2,
-      name: 'Jane Smith',
+      name: 'John Doe',
       portfolio: {
         stocks: [
           { symbol: 'MSFT', quantity: 8, pricePerUnit: 290 },
@@ -43,6 +43,7 @@ const initialState: PortfolioState = {
         ],
       },
     },
+
   ],
   minValue: 1000,
 };
